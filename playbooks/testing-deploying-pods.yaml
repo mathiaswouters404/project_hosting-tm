@@ -1,0 +1,48 @@
+---
+- name: Deploy pods to MicroK8s cluster
+  hosts: primary
+  remote_user: admin-ccs04
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: Install Python pip
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install Kubernetes library
+      pip:
+        name: kubernetes
+        state: present
+        executable: pip3
+
+    - name: Create namespace
+      become: false
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: my-namespace
+        state: present
+
+    - name: Deploy pod
+      become: false
+      k8s:
+        api_version: v1
+        kind: Pod
+        namespace: my-namespace
+        name: my-pod
+        labels:
+          app: my-app
+        spec:
+          containers:
+            - name: my-container
+              image: nginx
+              ports:
+                - containerPort: 80
+      register: pod_result
+
+    - name: Display pod info
+      debug:
+        var: pod_result

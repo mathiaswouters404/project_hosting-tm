@@ -1,0 +1,24 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+
+// Noty
+@import '~noty/src/noty';
+@import '~noty/src/themes/bootstrap-v4';
+
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+// Styling
+
+@import "main";
+@import "agenda";
+@import "logboek";
+@import "progressBar";
+@import "managePatients";
+

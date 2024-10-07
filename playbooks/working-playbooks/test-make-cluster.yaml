@@ -1,0 +1,68 @@
+---
+- name: Install Docker and MicroK8s
+  hosts: servers
+  remote_user: admin-ccs04
+  become: true
+
+  tasks:
+    - name: Update package lists
+      apt:
+        update_cache: yes
+
+    - name: Configure dpkg
+      become: true
+      shell: sudo dpkg --configure -a
+
+    - name: Install dependencies
+      apt:
+        name: ['apt-transport-https', 'ca-certificates', 'curl', 'gnupg-agent', 'software-properties-common']
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+#    - name: Add MicroK8s GPG key
+#      apt_key:
+#        url: https://raw.githubusercontent.com/ubuntu/microk8s/master/microk8s.gpg
+#        state: present
+
+#    - name: Add MicroK8s repository
+#      apt_repository:
+#        repo: "deb https://microk8s.io/kubernetes {{ ansible_distribution_release }} main"
+#        state: present
+
+#    - name: Install MicroK8s
+#      apt:
+#        name: microk8s
+#        state: present
+
+    - name: Install MicroK8s
+      shell: |
+        curl -sSL https://get.docker.com/ | sh
+        snap install microk8s --classic
+        usermod -a -G microk8s {{ ansible_user }}
+        echo "alias microk8s.kubectl='microk8s kubectl'" >> ~/.bashrc
+        source ~/.bashrc
+      args:
+        executable: /bin/bash
+
+    - name: Enable Docker service
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Enable and start MicroK8s
+      command: microk8s.start

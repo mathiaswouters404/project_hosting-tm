@@ -1,0 +1,52 @@
+---
+- name: Join MicroK8s nodes to the cluster
+  hosts: servers
+  remote_user: admin-ccs04
+  become: true
+  vars:
+    master_node: "{{ groups['all'][0] }}"  # First server in the inventory is the master node
+    worker_nodes: "{{ groups['all'][1:] }}"  # Remaining servers are worker nodes
+
+  tasks:
+    - name: Set the master node
+      set_fact:
+        master_node: "{{ groups['all'][0] }}"
+      run_once: true
+
+    - name: Retrieve MicroK8s join command
+      shell: microk8s add-node | awk '/To join/ {print $0}'
+      register: join_command_output
+      changed_when: false
+      when: inventory_hostname == master_node
+
+#    - name: Join node to MicroK8s cluster
+#      shell: "{{ hostvars[master_node].join_command.stdout }}"
+#      when: inventory_hostname != master_node and inventory_hostname in worker_nodes
+
+
+#    - name: Store join command in a temporary file
+#      lineinfile:
+#        dest: /tmp/microk8s_join_command
+#        line: "{{ join_command_output.stdout }}"
+#        create: yes
+#        mode: '0644'
+#      delegate_to: localhost
+#      run_once: true
+#      when: inventory_hostname == master_node
+
+    - name: Create temporary file with join command
+      copy:
+        content: "{{ join_command_output.stdout }}"
+        dest: /tmp/microk8s_join_command
+        mode: '0644'
+      delegate_to: secondary
+      run_once: true
+      when: inventory_hostname == master_node
+
+#    - name: Copy file using SCP
+#      command: scp /tmp/microk8s_join_command admin-ccs04@secondary-vm:/tmp/microk8s_join_command
+#      delegate_to: primary
+
+    - name: Join node to MicroK8s cluster
+      shell: "bash /tmp/microk8s_join_command"
+      when: inventory_hostname != master_node and inventory_hostname in worker_nodes

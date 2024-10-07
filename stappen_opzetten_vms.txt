@@ -1,0 +1,43 @@
+Eerst => deploy van template
+deze template heeft ssh al opstaan zodat we er makkelijk aan geraken
+
+=> voeg vanaf admin vm de ssh key toe aan de ander vms (in de template is dit al gebeurd. is nog bespreekbaar wegens security)
+
+=> command
+-> ssh-copy-id -i ~/.ssh/id_rsa admin-ccs04@172.26.192.174
+-> ip is het ip van de target
+-> bij het aanmaken van een nieuwe ssh key gebruik:
+--> ssh-keygen
+
+--> command om ssh key te copieren naar alles hosts/servers zodat ansible plpaybook werkt voor het joinen van de k8s cluster
+
+=> daarna in ansible hosts file aangeven dat ansible deze key moet gebruiken
+-> 
+[servers]
+#172.26.192.197 ip admin vm
+primary ansible_host=172.26.192.219 ansible_ssh_private_key_file=/home/admin-ccs04/.ssh/id_rsa
+secondary ansible_host=172.26.192.226 ansible_ssh_private_key_file=/home/admin-ccs04/.ssh/id_rsa
+tertiary ansible_host=172.26.192.210 ansible_ssh_private_key_file=/home/admin-ccs04/.ssh/id_rsa
+
+#[servers:vars]
+#ansible_user=admin-ccs04
+#ansible_password=admin-ccs04
+
+-> onderste deel is voor testing zonder ssh key
+
+=> test commando om te zien dat alle nodes berijkbaar zijn via ansible
+-> ansible -i hosts all -m ping
+--> moet in de directory zijn met de hosts file in
+
+=> command uitvoeren playbooks
+-> sudo ansible-playbook test.yml --ask-become-pass
+--> ask-become-pass is voor het user/rootwachtwoord te vragen als input van de user (als security, ssh key is dus nodig en het wachtwoord dat enkel de admins kennen)
+dit commando moet weer worden uitgevoerd in de directory waar de file staat, hier "ansible-playbook test.yml"
+
+==> error gemaakt door chatgpt -> oplossing: sudo rm /etc/apt/sources.list.d/docker.list
+
+=> ansible-galaxy collection install community.kubernetes
+-> install on admin-vm, plugin voor kubernetes met ansible
+
+=> remove microk8s from vm
+	-> sudo snap remove --purge microk8s

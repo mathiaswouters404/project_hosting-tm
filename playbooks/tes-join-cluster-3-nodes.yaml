@@ -1,0 +1,82 @@
+- name: Join MicroK8s nodes to the cluster
+  hosts: servers
+  remote_user: admin-ccs04
+  become: true
+  vars:
+    master_node: "{{ groups['all'][0] }}"  # First server in the inventory is the master node
+    worker_node_1: "{{ groups['all'][2] }}"  # worker node 1
+    worker_node_2: "{{ groups['all'][3] }}"  # worker node 2
+
+  tasks:
+
+#----- join worker node 1
+
+    - name: "Create join key and read output for worker node 1"
+      command: microk8s add-node
+      register: add_output1
+      when: inventory_hostname == master_node
+
+    - name: "Define the 'join_command' variable for worker node 1"
+      set_fact:
+        join_command: "{{ (add_output1.stdout_lines | select('match', '.*172.26.192.219.*'))[0] }}"
+      when: inventory_hostname == master_node
+
+    - name: "Debug: Printing the join command for worker node 1"
+      debug:
+        var: join_command
+      when: inventory_hostname == master_node
+
+    - name: "Add K8S join command to a dummy host for worker node 1"
+      add_host:
+        name: "K8S_JOIN_HOLDER"
+        command: "{{ join_command + ' --worker' }}"
+      when: inventory_hostname == master_node
+
+    - name: "Execute the join command in a worker node 1, Debug: Printing the join command"
+      debug:
+        var: hostvars['K8S_JOIN_HOLDER']['command']
+      when: inventory_hostname == worker_node_1
+
+    - name: "Join the cluster from the generated join command for worker node 1"
+      command: "{{ hostvars['K8S_JOIN_HOLDER']['command'] }}"
+      when: inventory_hostname == worker_node_1
+
+
+#----- join worker node 2
+
+    - name: "Create join key and read output for worker node 2"
+      command: microk8s add-node
+      register: add_output2
+      when: inventory_hostname == master_node
+
+    - name: "Define the 'join_command' variable for worker node 2"
+      set_fact:
+        join_command: "{{ (add_output2.stdout_lines | select('match', '.*172.26.192.219.*'))[0] }}"
+      when: inventory_hostname == master_node
+
+    - name: "Debug: Printing the join command for worker node 2"
+      debug:
+        var: join_command
+      when: inventory_hostname == master_node
+
+    - name: "Add K8S join command to a dummy host for worker node 2"
+      add_host:
+        name: "K8S_JOIN_HOLDER"
+        command: "{{ join_command + ' --worker' }}"
+      when: inventory_hostname == master_node
+
+    - name: "Execute the join command in a worker node 2, Debug: Printing the join command"
+      debug:
+        var: hostvars['K8S_JOIN_HOLDER']['command']
+      when: inventory_hostname == worker_node_2
+
+    - name: "Join the cluster from the generated join command for worker node 2"
+      command: "{{ hostvars['K8S_JOIN_HOLDER']['command'] }}"
+      when: inventory_hostname == worker_node_2
+
+
+#---- install rancher
+
+#    - name: "Install rancher"
+#      command: "docker run --privileged -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher"
+#      when: inventory_hostname == master_node

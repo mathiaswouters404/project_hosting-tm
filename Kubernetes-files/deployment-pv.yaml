@@ -1,0 +1,65 @@
+## DEPLOYMENT FILE PERSISTENT VOLUMES
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: laravel-pv
+  namespace: project-1
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /home/admin-ccs04/data/laravel
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  namespace: project-1
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: mysql-volume
+  hostPath:
+    path: /home/admin-ccs04/data/mysql
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: laravel-pvc
+  namespace: project-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  volumeName: laravel-pv
+  storageClassName: standard
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: project-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  volumeName: mysql-pv
+  storageClassName: mysql-volume

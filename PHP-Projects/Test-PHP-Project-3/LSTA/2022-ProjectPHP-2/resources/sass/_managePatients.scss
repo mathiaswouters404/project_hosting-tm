@@ -1,0 +1,24 @@
+#manage_patients {
+    td {
+        > * {
+            line-height: 50px;
+        }
+
+
+        img {
+            min-height: 50px;
+            max-height: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 50px;
+        }
+    }
+}

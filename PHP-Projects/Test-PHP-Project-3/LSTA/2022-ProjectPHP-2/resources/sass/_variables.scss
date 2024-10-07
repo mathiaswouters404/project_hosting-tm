@@ -1,0 +1,44 @@
+@use "sass:color";
+
+// Body
+$body-bg: #f8fafc;
+
+// Typography
+$font-family-sans-serif: 'Nunito', sans-serif;
+$font-size-base: 0.9rem;
+$line-height-base: 1.6;
+
+// Colors
+$blue: #3490dc;
+$indigo: #6574cd;
+$purple: #9561e2;
+$pink: #f66d9b;
+$red: #e3342f;
+$orange: #f6993f;
+$yellow: #ffed4a;
+$green: #38c172;
+$teal: #4dc0b5;
+$cyan: #6cb2eb;
+
+// Agenda
+$bgc-menu: #999;
+$bgc-task: #0FB3FA;
+$bgc-appointment: #FF2323;
+$bgc-medication: #00CC1F;
+$bgc-questionnaire: #ffba08;
+
+
+$menu-width: 20vw;
+$hours-width: 50px;
+
+$baseColor: #115f53;
+$secondaryColor: #E56427;
+
+
+$theme-colors: (
+    "dark": $baseColor,
+    "secondary": $secondaryColor
+);
+
+
+$background: color.adjust($baseColor, $lightness:70%);

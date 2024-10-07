@@ -1,0 +1,55 @@
+- name: Join MicroK8s nodes to the cluster
+  hosts: servers
+  remote_user: admin-ccs04
+  become: true
+  vars:
+    master_node: "{{ groups['all'][0] }}"  # First server in the inventory is the master node
+    worker_nodes: "{{ groups['all'][2:] }}"  # Remaining servers are worker nodes
+    worker_node_1: "{{ groups['all'][2] }}"  # worker node 1 for enableling metallb, dns and dashboard
+
+  tasks:
+    - name: "Create join key and read output"
+      command: microk8s add-node --token-ttl 999
+      register: add_output
+      when: inventory_hostname == master_node
+
+    - name: "Define the 'join_command' variable"
+      set_fact:
+        join_command: "{{ (add_output.stdout_lines | select('match', '.*172.26.104.1.*'))[0] }}"
+      when: inventory_hostname == master_node
+
+    - name: "Debug: Printing the join command"
+      debug:
+        var: join_command
+      when: inventory_hostname == master_node
+
+    - name: "Add K8S join command to a dummy host"
+      add_host:
+        name: "K8S_JOIN_HOLDER"
+        command: "{{ join_command + ' --worker' }}"
+      when: inventory_hostname == master_node
+
+    - name: "Execute the join command in a worker node, Debug: Printing the join command"
+      debug:
+        var: hostvars['K8S_JOIN_HOLDER']['command']
+      when: inventory_hostname != master_node and inventory_hostname in worker_nodes
+      #when: inventory_hostname == worker_nodes
+      #when: inventory_hostname in worker_nodes
+      #when: inventory_hostname != master_node and inventory_hostname == worker_nodes
+
+    - name: "Join the cluster from the generated join command"
+      command: "{{ hostvars['K8S_JOIN_HOLDER']['command'] }}"
+      when: inventory_hostname != master_node and inventory_hostname in worker_nodes
+      #when: inventory_hostname == worker_nodes
+      #when: inventory_hostname in worker_nodes
+      #when: inventory_hostname != master_node and inventory_hostname == worker_nodes
+
+#    - name: "Install rancher"
+#      command: "docker run --privileged -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher"
+#      when: inventory_hostname == master_node
+
+    - name: "enable metallb, dns and dashboard"
+      add_host:
+        name: "metallb_and_dashboard"
+        command: microk8s enable dashboard dns metallb:172.26.104.20-172.26.104.25
+      when: inventory_hostname == master_node

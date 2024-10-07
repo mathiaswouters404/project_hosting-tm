@@ -1,0 +1,31 @@
+./deploy.sh
+
+microk8s kubectl apply -f deployment.yaml
+
+microk8s kubectl get pods -n project-1
+
+microk8s kubectl get svc -o wide -n project-1
+
+microk8s kubectl delete svc <service-name>
+
+microk8s kubectl get deployment -n project-1
+
+microk8s kubectl delete deployment <deployment-name>
+
+microk8s kubectl get persistentvolume 
+
+microk8s kubectl delete persistentvolume <pv-name>
+
+microk8s kubectl get persistentvolumeclaim
+
+microk8s kubectl delete persistentvolumeclaim <pvc-name>
+
+microk8s kubectl config view
+
+microk8s kubectl describe pod <pod-name>
+
+microk8s kubectl get events -n project-1
+
+microk8s kubectl delete namespace project-1
+
+microk8s kubectl logs <laravel-pod-name> -c laravel -n project-1

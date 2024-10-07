@@ -1,0 +1,13 @@
+- name: Join MicroK8s nodes to the cluster
+  hosts: servers
+  remote_user: admin-ccs04
+  become: true
+  vars:
+    master_node: "{{ groups['all'][0] }}"  # First server in the inventory is the master node
+    worker_nodes: "{{ groups['all'][2:] }}"  # Remaining servers are worker nodes
+
+  tasks:
+
+    - name: "Install rancher"
+      command: "docker run --privileged -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher"
+      when: inventory_hostname == master_node

@@ -1,0 +1,56 @@
+## DEPLOYMENT FILE Laravel --> NO PV --> Hostpath
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-app
+  namespace: project-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: laravel-app
+  template:
+    metadata:
+      labels:
+        app: laravel-app
+    spec:
+      containers:
+        - name: laravel
+          image: bitnami/laravel
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DB_HOST
+              value: mysql-ser
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: testing
+            - name: DB_USERNAME
+              value: laravel
+            - name: DB_PASSWORD
+              value: password
+          volumeMounts:
+            - name: laravel-data
+              mountPath: /app
+      volumes:
+        - name: laravel-data
+          hostPath:
+            path: /mnt/shared/client-1
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-ser
+  namespace: project-1
+spec:
+  selector:
+    app: laravel-app
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: LoadBalancer

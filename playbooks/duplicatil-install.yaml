@@ -1,0 +1,35 @@
+- name: Join MicroK8s nodes to the cluster
+  hosts: servers
+  remote_user: admin-ccs04
+  become: true
+  vars:
+    master_node: "{{ groups['all'][0] }}"  # First server in the inventory is the master node
+    worker_nodes: "{{ groups['all'][2:] }}"  # Remaining servers are worker nodes
+    worker_node_1: "{{ groups['all'][2] }}"  # worker node 1 for enableling metallb, dns and dashboard
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name: install required packages
+          - apt-transport-https
+          - dirmngr
+        state: present
+      when: inventory_hostname == worker_node_1
+
+    - name: Add Duplicati APT repository key
+      apt_key:
+        url: https://updates.duplicati.com/beta/latest/2.0.6.1/Duplicati-deb-signing.key
+        state: present
+      when: inventory_hostname == worker_node_1
+
+    - name: Add Duplicati APT repository
+      apt_repository:
+        repo: "deb http://updates.duplicati.com/beta/latest/2.0.6.1 bionic main"
+        state: present
+      when: inventory_hostname == worker_node_1
+
+    - name: Install Duplicati package
+      apt:
+        name: duplicati
+        state: present
+      when: inventory_hostname == worker_node_1

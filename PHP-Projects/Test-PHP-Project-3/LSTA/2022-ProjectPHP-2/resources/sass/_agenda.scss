@@ -1,0 +1,275 @@
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    .event_task {
+        background-color: $bgc-task;
+    }
+
+    .event_appointment {
+        background-color: $bgc-appointment;
+    }
+
+    .event_medication {
+        background-color: $bgc-medication;
+    }
+
+    .event_questionnaire {
+        background-color: $bgc-questionnaire;
+    }
+
+    header.menu {
+        background-color: $bgc-menu;
+        width: $menu-width;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+
+        .agenda--button {
+            > a, div {
+                background-color: $secondaryColor;
+                margin-bottom: 10px;
+                padding: 7px 10px;
+                text-align: center;
+                min-width: 100%;
+                display: inline-block;
+                border-radius: 5px;
+                color: white;
+            }
+
+            > div:hover {
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        }
+
+        > h1 {
+            margin-bottom: 30px;
+        }
+
+        > section.menu__profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            > div {
+                font-size: 1.3rem;
+                margin-bottom: 30px;
+
+                > div.menu__profile__icon {
+                    padding-right: 5px;
+
+                    > img {
+                        border-radius: 50%;
+                        min-height: 150px;
+                        max-height: 150px;
+                        min-width: 150px;
+                        max-width: 150px;
+                        object-fit: cover;
+                    }
+                }
+
+                > div {
+                    text-align: center;
+
+                    > a.menu__profile__name {
+                        text-decoration: underline;
+                        text-transform: capitalize;
+                        color: #fff !important;
+                    }
+                }
+            }
+        }
+
+        > section.menu__navigation {
+            margin-bottom: 30px;
+
+            > ul {
+                list-style-type: none;
+                padding-left: 0;
+            }
+        }
+
+        > section.menu__legend {
+            > h2 {
+                margin-bottom: 15px;
+            }
+
+            > ul {
+                padding-left: 0;
+
+                > li.legend--button {
+                    margin-bottom: 10px;
+                    padding: 0 15px;
+                    min-width: 100%;
+                    display: inline-block;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    color: white;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    background-color: $secondaryColor !important;
+
+                    border-right: 15px solid #fff;
+                }
+
+                > li.event_appointment {
+                    border-color: $bgc-appointment;
+                }
+
+                > li.event_task {
+                    border-color: $bgc-task;
+                }
+
+                > li.event_medication {
+                    border-color: $bgc-medication;
+                }
+
+                > li.event_questionnaire {
+                    border-color: $bgc-questionnaire;
+                }
+            }
+        }
+    }
+
+    main.agenda {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        section.agenda__date {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #000;
+            padding: 4px $hours-width;
+
+            > .agenda__date--previous:hover,
+            > .agenda__date--next:hover {
+                cursor: pointer;
+            }
+        }
+
+        div.agenda__days {
+            display: flex;
+            border-bottom: 1px solid #000;
+        }
+
+        div.agenda__days--filler {
+            min-width: $hours-width;
+            border-right: 1px solid #000;
+        }
+
+        section.agenda__days--content {
+            width: 100%;
+
+            > ul {
+                list-style-type: none;
+                padding-left: 0;
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0;
+                margin-right: 16px;
+
+                > li {
+                    text-align: center;
+                    width: 100%;
+                }
+            }
+        }
+
+        section.agenda__events {
+            display: flex;
+            height: 100%;
+            overflow-y: auto;
+
+            > div.agenda__events--hours {
+                border-right: 1px solid #000;
+                text-align: center;
+                height: 150%;
+                width: $hours-width;
+
+
+                > ul {
+                    height: 100%;
+                    list-style-type: none;
+                    padding-left: 0;
+                    width: $hours-width;
+
+                    > li {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: flex-end;
+                        min-height: calc(1 / 24 * 100%);
+
+                        > div {
+                            position: relative;
+                            transform: translateY(50%);
+                        }
+                    }
+                }
+            }
+
+            > div.agenda__events--e {
+                width: 100%;
+                position: relative;
+
+                > div.agenda__events--events {
+                    width: 100%;
+                    height: 150%;
+                    display: flex;
+                    flex-direction: row;
+
+                    > div {
+                        border-right: 1px solid #000;
+                        width: 100%;
+                        height: 100%;
+                        margin-right: 0;
+                        position: relative;
+
+                        > div.event {
+                            overflow: hidden;
+                            width: 100%;
+                            min-height: 2rem;
+                            position: absolute;
+                            border-radius: 5px;
+                            padding: 2px;
+                            color: #fff;
+
+                            > div {
+                                height: 100%;
+                                 border-radius: 5px;
+
+                                div {
+                                    padding: 3px 1px;
+                                    text-align: center;
+                                }
+                            }
+                        }
+
+                        > div.event:hover {
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                > div div.agenda__events--separator {
+                    border-bottom: 1px dashed rgba(0, 0, 0, 0.3);
+                    min-height: calc(1 / 24 * 150%);
+                    min-width: 100%;
+                    position: absolute;
+                }
+            }
+        }
+    }
+}
