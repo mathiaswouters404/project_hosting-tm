@@ -2,6 +2,8 @@
 
 As a team of 6 dedicated students, we have taken on the challenge of developing our own hosting platform specifically tailored to run PHP projects for fellow programming students. Alongside this, we are also responsible for creating a robust API to efficiently control and manage the platform. Currently, we are fully immersed in the development process, working diligently to bring our vision to life.
 
+**Report:** [Project Hosting Documentation](Documentatie_ProjectHosting.pdf)
+
 **Completed:** June 2023
 
 ## Project Hosting
